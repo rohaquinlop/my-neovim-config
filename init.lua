@@ -400,22 +400,7 @@ vim.pack.add({
 	"https://github.com/L3MON4D3/LuaSnip",
 	"https://github.com/folke/which-key.nvim",
 	"https://github.com/mrcjkb/rustaceanvim",
-	{
-		src = "https://github.com/dmtrKovalenko/fff.nvim",
-	}, 	-- binary downloaded by PackChanged autocmd below
-})
-
--- Download fff.nvim binary when the plugin is first installed/updated
-vim.api.nvim_create_autocmd("PackChanged", {
-	callback = function(ev)
-		local name = ev.data.spec.name
-		if name == "fff.nvim" then
-			if not ev.data.active then
-				vim.cmd.packadd("fff.nvim")
-			end
-			require("fff.download").download_or_build_binary()
-		end
-	end,
+	"https://github.com/dmtrKovalenko/fff.nvim",
 })
 
 vim.cmd.colorscheme("catppuccin-macchiato")
@@ -464,6 +449,10 @@ vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#2a2a2a", bg = "none" })
 vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "none" })
 
+-- Load fff.nvim (first startup: binary missing → pcall catches the Rust error)
+-- Then download/build the binary, then setup properly
+pcall(vim.cmd.packadd, "fff.nvim")
+require("fff.download").download_or_build_binary()
 require("fff").setup({})
 vim.keymap.set("n", "<leader>ff", function()
 	require("fff").find_files()
