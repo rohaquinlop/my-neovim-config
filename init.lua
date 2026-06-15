@@ -399,6 +399,8 @@ vim.pack.add({
 		version = vim.version.range("1.*"),
 	},
 	"https://github.com/L3MON4D3/LuaSnip",
+	"https://github.com/folke/which-key.nvim",
+	"https://github.com/mrcjkb/rustaceanvim",
 })
 
 vim.cmd.colorscheme("catppuccin-macchiato")
@@ -603,53 +605,55 @@ local function lsp_on_attach(ev)
 	end
 
 	local bufnr = ev.buf
-	local opts = { noremap = true, silent = true, buffer = bufnr }
+	local function lsp_opts(desc)
+		return { noremap = true, silent = true, buffer = bufnr, desc = desc }
+	end
 
 	vim.keymap.set("n", "<leader>gd", function()
 		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
-	end, opts)
+	end, lsp_opts("Goto Definition"))
 
-	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, lsp_opts("Definition (Open)"))
 
 	vim.keymap.set("n", "<leader>gS", function()
 		vim.cmd("vsplit")
 		vim.lsp.buf.definition()
-	end, opts)
+	end, lsp_opts("Definition (Split)"))
 
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, lsp_opts("Code Action"))
+	vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, lsp_opts("Rename"))
 
 	vim.keymap.set("n", "<leader>D", function()
 		vim.diagnostic.open_float({ scope = "line" })
-	end, opts)
+	end, lsp_opts("Line Diagnostics"))
 	vim.keymap.set("n", "<leader>d", function()
 		vim.diagnostic.open_float({ scope = "cursor" })
-	end, opts)
+	end, lsp_opts("Cursor Diagnostics"))
 	vim.keymap.set("n", "<leader>nd", function()
 		vim.diagnostic.jump({ count = 1 })
-	end, opts)
+	end, lsp_opts("Next Diagnostic"))
 
 	vim.keymap.set("n", "<leader>pd", function()
 		vim.diagnostic.jump({ count = -1 })
-	end, opts)
+	end, lsp_opts("Prev Diagnostic"))
 
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, lsp_opts("Hover"))
 
 	vim.keymap.set("n", "<leader>fr", function()
 		require("fzf-lua").lsp_references()
-	end, opts)
+	end, lsp_opts("References"))
 	vim.keymap.set("n", "<leader>ft", function()
 		require("fzf-lua").lsp_typedefs()
-	end, opts)
+	end, lsp_opts("Type Definitions"))
 	vim.keymap.set("n", "<leader>fs", function()
 		require("fzf-lua").lsp_document_symbols()
-	end, opts)
+	end, lsp_opts("Document Symbols"))
 	vim.keymap.set("n", "<leader>fw", function()
 		require("fzf-lua").lsp_workspace_symbols()
-	end, opts)
+	end, lsp_opts("Workspace Symbols"))
 	vim.keymap.set("n", "<leader>fi", function()
 		require("fzf-lua").lsp_implementations()
-	end, opts)
+	end, lsp_opts("Implementations"))
 
 	if client:supports_method("textDocument/codeAction", bufnr) then
 		vim.keymap.set("n", "<leader>oi", function()
@@ -661,7 +665,7 @@ local function lsp_on_attach(ev)
 			vim.defer_fn(function()
 				vim.lsp.buf.format({ bufnr = bufnr })
 			end, 50)
-		end, opts)
+		end, lsp_opts("Organize Imports"))
 	end
 end
 
@@ -678,7 +682,9 @@ require("blink.cmp").setup({
 		["<C-Space>"] = { "show", "hide" },
 		["<CR>"] = { "accept", "fallback" },
 		["<C-j>"] = { "select_next", "fallback" },
+		["<Down>"] = { "select_next", "fallback" },
 		["<C-k>"] = { "select_prev", "fallback" },
+		["<Up>"] = { "select_prev", "fallback" },
 		["<Tab>"] = { "snippet_forward", "fallback" },
 		["<S-Tab>"] = { "snippet_backward", "fallback" },
 	},
@@ -876,3 +882,71 @@ vim.keymap.set("t", "<C-q>", function()
 		terminal_state.is_open = false
 	end
 end, { noremap = true, silent = true, desc = "Close floating terminal" })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "rust",
+	callback = function()
+		local rust_buf = vim.api.nvim_get_current_buf()
+		vim.keymap.set("n", "<leader>a", function()
+			vim.cmd.RustLsp("codeAction")
+		end, { silent = true, buffer = rust_buf, desc = "Rust Code Action" })
+		vim.keymap.set("n", "K", function()
+			vim.cmd.RustLsp({ "hover", "actions" })
+		end, { silent = true, buffer = rust_buf, desc = "Rust Hover/Actions" })
+	end,
+})
+
+local wk = require("which-key")
+
+wk.setup({
+	preset = "modern",
+	delay = function(ctx)
+		return ctx.plugin and 0 or 50
+	end,
+	icons = {
+		mappings = true,
+		colors = true,
+		breadcrumb = "»",
+		separator = "➜",
+		group = "+",
+	},
+	win = {
+		padding = { 1, 2 },
+		title = true,
+		title_pos = "center",
+		no_overlap = true,
+		border = "rounded",
+	},
+	layout = {
+		width = { min = 20 },
+		spacing = 3,
+	},
+	sort = { "local", "order", "group", "alphanum", "mod" },
+	plugins = {
+		marks = true,
+		registers = true,
+		spelling = {
+			enabled = true,
+			suggestions = 20,
+		},
+		presets = {
+			operators = true,
+			motions = true,
+			text_objects = true,
+			windows = true,
+			nav = true,
+			z = true,
+			g = true,
+		},
+	},
+	show_help = true,
+	show_keys = true,
+})
+
+wk.add({
+	{ "<leader>f", group = "Find" },
+	{ "<leader>g", group = "Go To" },
+	{ "<leader>b", group = "Buffer" },
+	{ "<leader>s", group = "Split" },
+	{ "<leader>h", group = "Git Hunk" },
+})
