@@ -452,9 +452,9 @@ vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "none" })
 -- Load fff.nvim (first startup: binary missing → pcall catches the Rust error)
 -- Download binary only if missing (guards against re-download every startup)
 pcall(vim.cmd.packadd, "fff.nvim")
-if vim.fn.filereadable(
-	vim.fn.stdpath("data") .. "/site/pack/core/opt/fff.nvim/target/release/libfff_nvim.dylib"
-) == 0 then
+if
+	vim.fn.filereadable(vim.fn.stdpath("data") .. "/site/pack/core/opt/fff.nvim/target/release/libfff_nvim.dylib") == 0
+then
 	require("fff.download").download_or_build_binary()
 end
 require("fff").setup({})
