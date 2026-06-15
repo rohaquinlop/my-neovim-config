@@ -381,7 +381,6 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.pack.add({
 	{ src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
 	"https://github.com/nvim-tree/nvim-tree.lua",
-	"https://github.com/ibhagwan/fzf-lua",
 	"https://github.com/echasnovski/mini.nvim",
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
@@ -401,6 +400,22 @@ vim.pack.add({
 	"https://github.com/L3MON4D3/LuaSnip",
 	"https://github.com/folke/which-key.nvim",
 	"https://github.com/mrcjkb/rustaceanvim",
+	{
+		src = "https://github.com/dmtrKovalenko/fff.nvim",
+	}, 	-- binary downloaded by PackChanged autocmd below
+})
+
+-- Download fff.nvim binary when the plugin is first installed/updated
+vim.api.nvim_create_autocmd("PackChanged", {
+	callback = function(ev)
+		local name = ev.data.spec.name
+		if name == "fff.nvim" then
+			if not ev.data.active then
+				vim.cmd.packadd("fff.nvim")
+			end
+			require("fff.download").download_or_build_binary()
+		end
+	end,
 })
 
 vim.cmd.colorscheme("catppuccin-macchiato")
@@ -449,25 +464,19 @@ vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#2a2a2a", bg = "none" })
 vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "none" })
 
-require("fzf-lua").setup({})
+require("fff").setup({})
 vim.keymap.set("n", "<leader>ff", function()
-	require("fzf-lua").files()
-end, { desc = "FZF Files" })
+	require("fff").find_files()
+end, { desc = "Find files" })
 vim.keymap.set("n", "<leader>fg", function()
-	require("fzf-lua").live_grep()
-end, { desc = "FZF Live Grep" })
+	require("fff").live_grep()
+end, { desc = "Live grep" })
 vim.keymap.set("n", "<leader>fb", function()
-	require("fzf-lua").buffers()
-end, { desc = "FZF Buffers" })
+	vim.cmd("ls")
+end, { desc = "List buffers" })
 vim.keymap.set("n", "<leader>fh", function()
-	require("fzf-lua").help_tags()
-end, { desc = "FZF Help Tags" })
-vim.keymap.set("n", "<leader>fx", function()
-	require("fzf-lua").diagnostics_document()
-end, { desc = "FZF Diagnostics Document" })
-vim.keymap.set("n", "<leader>fX", function()
-	require("fzf-lua").diagnostics_workspace()
-end, { desc = "FZF Diagnostics Workspace" })
+	vim.cmd("help")
+end, { desc = "Open help" })
 
 require("mini.ai").setup({})
 require("mini.comment").setup({})
@@ -609,11 +618,9 @@ local function lsp_on_attach(ev)
 		return { noremap = true, silent = true, buffer = bufnr, desc = desc }
 	end
 
-	vim.keymap.set("n", "<leader>gd", function()
-		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
-	end, lsp_opts("Goto Definition"))
+	vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, lsp_opts("Goto Definition"))
 
-	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, lsp_opts("Definition (Open)"))
+	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, lsp_opts("Goto Declaration"))
 
 	vim.keymap.set("n", "<leader>gS", function()
 		vim.cmd("vsplit")
@@ -639,21 +646,11 @@ local function lsp_on_attach(ev)
 
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, lsp_opts("Hover"))
 
-	vim.keymap.set("n", "<leader>fr", function()
-		require("fzf-lua").lsp_references()
-	end, lsp_opts("References"))
-	vim.keymap.set("n", "<leader>ft", function()
-		require("fzf-lua").lsp_typedefs()
-	end, lsp_opts("Type Definitions"))
-	vim.keymap.set("n", "<leader>fs", function()
-		require("fzf-lua").lsp_document_symbols()
-	end, lsp_opts("Document Symbols"))
-	vim.keymap.set("n", "<leader>fw", function()
-		require("fzf-lua").lsp_workspace_symbols()
-	end, lsp_opts("Workspace Symbols"))
-	vim.keymap.set("n", "<leader>fi", function()
-		require("fzf-lua").lsp_implementations()
-	end, lsp_opts("Implementations"))
+	vim.keymap.set("n", "<leader>fr", vim.lsp.buf.references, lsp_opts("References"))
+	vim.keymap.set("n", "<leader>ft", vim.lsp.buf.type_definition, lsp_opts("Type Definitions"))
+	vim.keymap.set("n", "<leader>fs", vim.lsp.buf.document_symbol, lsp_opts("Document Symbols"))
+	vim.keymap.set("n", "<leader>fw", vim.lsp.buf.workspace_symbol, lsp_opts("Workspace Symbols"))
+	vim.keymap.set("n", "<leader>fi", vim.lsp.buf.implementation, lsp_opts("Implementations"))
 
 	if client:supports_method("textDocument/codeAction", bufnr) then
 		vim.keymap.set("n", "<leader>oi", function()
