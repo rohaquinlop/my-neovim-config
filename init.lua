@@ -710,7 +710,13 @@ vim.lsp.config("lua_ls", {
 		},
 	},
 })
-vim.lsp.config("ruff", {})
+vim.lsp.config("ruff", {
+	init_options = {
+		settings = {
+			lineLength = 80,
+		},
+	},
+})
 vim.lsp.config("ty", {})
 vim.lsp.config("bashls", {})
 vim.lsp.config("ts_ls", {})
@@ -733,6 +739,10 @@ do
 
 	local cpplint = require("efmls-configs.linters.cpplint")
 	local clangfmt = require("efmls-configs.formatters.clang_format")
+	local cpp_clangfmt = {
+		formatCommand = "clang-format --style=Google -",
+		formatStdin = true,
+	}
 
 	local ruff_fmt = require("efmls-configs.formatters.ruff")
 
@@ -759,7 +769,7 @@ do
 		settings = {
 			languages = {
 				c = { clangfmt, cpplint },
-				cpp = { clangfmt, cpplint },
+				cpp = { cpp_clangfmt, cpplint },
 				css = { prettier_d },
 				html = { prettier_d },
 				javascript = { eslint_d, prettier_d },
