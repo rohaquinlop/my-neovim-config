@@ -653,7 +653,7 @@ local function lsp_on_attach(ev)
 				bufnr = bufnr,
 			})
 			vim.defer_fn(function()
-				vim.lsp.buf.format({ bufnr = bufnr })
+				vim.lsp.buf.format({ bufnr = bufnr, filter = function(c) return c.name == "efm" end })
 			end, 50)
 		end, lsp_opts("Organize Imports"))
 	end
@@ -734,6 +734,8 @@ do
 	local cpplint = require("efmls-configs.linters.cpplint")
 	local clangfmt = require("efmls-configs.formatters.clang_format")
 
+	local ruff_fmt = require("efmls-configs.formatters.ruff")
+
 	vim.lsp.config("efm", {
 		filetypes = {
 			"c",
@@ -746,6 +748,7 @@ do
 			"jsonc",
 			"lua",
 			"markdown",
+			"python",
 			"sh",
 			"typescript",
 			"typescriptreact",
@@ -765,6 +768,7 @@ do
 				jsonc = { eslint_d, fixjson },
 				lua = { luacheck, stylua },
 				markdown = { prettier_d },
+				python = { ruff_fmt },
 				sh = { shellcheck, shfmt },
 				typescript = { eslint_d, prettier_d },
 				typescriptreact = { eslint_d, prettier_d },
