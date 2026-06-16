@@ -653,7 +653,12 @@ local function lsp_on_attach(ev)
 				bufnr = bufnr,
 			})
 			vim.defer_fn(function()
-				vim.lsp.buf.format({ bufnr = bufnr, filter = function(c) return c.name == "efm" end })
+				vim.lsp.buf.format({
+					bufnr = bufnr,
+					filter = function(c)
+						return c.name == "efm"
+					end,
+				})
 			end, 50)
 		end, lsp_opts("Organize Imports"))
 	end
