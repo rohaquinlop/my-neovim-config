@@ -6,8 +6,14 @@ vim.pack.add({
 		branch = "main",
 		build = ":TSUpdate",
 	},
+	{
+		src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
+		branch = "main",
+	},
 	"https://github.com/folke/which-key.nvim",
 	"https://github.com/dmtrKovalenko/fff.nvim",
+	"https://github.com/ggandor/leap.nvim",
+	"https://github.com/tpope/vim-repeat",
 })
 
 require("nvim-tree").setup({
@@ -131,6 +137,29 @@ end
 
 setup_treesitter()
 
+-- Treesitter textobjects (Helix-style ]f / [f function navigation)
+local ts_textobjects = require("nvim-treesitter-textobjects")
+ts_textobjects.setup({})
+local ts_move = require("nvim-treesitter-textobjects.move")
+vim.keymap.set({ "n", "x", "o" }, "]f", function()
+	ts_move.goto_next_start("@function.outer")
+end, { desc = "Next function" })
+vim.keymap.set({ "n", "x", "o" }, "[f", function()
+	ts_move.goto_previous_start("@function.outer")
+end, { desc = "Prev function" })
+vim.keymap.set({ "n", "x", "o" }, "]F", function()
+	ts_move.goto_next_end("@function.outer")
+end, { desc = "Next function end" })
+vim.keymap.set({ "n", "x", "o" }, "[F", function()
+	ts_move.goto_previous_end("@function.outer")
+end, { desc = "Prev function end" })
+
+-- Leap.nvim (Helix-style 2-char jump)
+-- gw = bidirectional jump (Helix convention)
+-- S  = jump to other windows
+vim.keymap.set({ "n", "x", "o" }, "gw", "<Plug>(leap)", { desc = "Leap (bidirectional)" })
+vim.keymap.set("n", "S", "<Plug>(leap-from-window)", { desc = "Leap (all windows)" })
+
 local wk = require("which-key")
 
 wk.setup({
@@ -184,5 +213,8 @@ wk.add({
 	{ "<leader>b", group = "Buffer" },
 	{ "<leader>s", group = "Split" },
 	{ "<leader>h", group = "Git Hunk" },
+	{ "gw", desc = "Leap (Helix jump)" },
+	{ "]f", desc = "Next function" },
+	{ "[f", desc = "Prev function" },
 })
 
