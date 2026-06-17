@@ -63,7 +63,18 @@ end, { desc = "Open help" })
 require("mini.ai").setup({})
 require("mini.comment").setup({})
 require("mini.move").setup({})
-require("mini.surround").setup({})
+require("mini.surround").setup({
+	mappings = {
+		add = "ms", -- Helix: ms{char} surrounds selection/motion
+		delete = "md", -- Helix: md{char} deletes surrounding
+		replace = "mr", -- Helix: mr{old}{new} replaces surrounding
+		find = "mf",
+		find_left = "mF",
+		highlight = "mh",
+		suffix_last = "l",
+		suffix_next = "n",
+	},
+})
 require("mini.cursorword").setup({})
 require("mini.indentscope").setup({})
 require("mini.pairs").setup({})
@@ -216,5 +227,8 @@ wk.add({
 	{ "gw", desc = "Leap (Helix jump)" },
 	{ "]f", desc = "Next function" },
 	{ "[f", desc = "Prev function" },
+	{ "ms", desc = "Surround" },
+	{ "md", desc = "Delete surrounding" },
+	{ "mr", desc = "Replace surrounding" },
 })
 

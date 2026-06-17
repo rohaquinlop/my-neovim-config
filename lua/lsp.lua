@@ -93,6 +93,7 @@ local function lsp_on_attach(ev)
 	end, lsp_opts("Prev Diagnostic"))
 
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, lsp_opts("Hover"))
+	vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover, lsp_opts("Hover (variable info)"))
 
 	vim.keymap.set("n", "<leader>fr", vim.lsp.buf.references, lsp_opts("References"))
 	vim.keymap.set("n", "<leader>ft", vim.lsp.buf.type_definition, lsp_opts("Type Definitions"))
