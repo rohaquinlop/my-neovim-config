@@ -37,6 +37,10 @@
       "rev": "a59a9b7fb0a42cbcf022938ee5f0724320b66f63",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
+    "nui.nvim": {
+      "rev": "de740991c12411b663994b2860f1a4fd0937c130",
+      "src": "https://github.com/MunifTanjim/nui.nvim"
+    },
     "nvim-lspconfig": {
       "rev": "a683e0ddf0cf64c6cd689e18ffb480ade3c162b7",
       "src": "https://github.com/neovim/nvim-lspconfig"
@@ -49,9 +53,25 @@
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
+    "plenary.nvim": {
+      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "remote-nvim.nvim": {
+      "rev": "9992c2fb8bf4f11aca2c8be8db286b506f92efcb",
+      "src": "https://github.com/amitds1997/remote-nvim.nvim"
+    },
+    "remote-sshfs.nvim": {
+      "rev": "7a12a1677bbe96ca98f0c713448ac1f518ba09b7",
+      "src": "https://github.com/nosduco/remote-sshfs.nvim"
+    },
     "rustaceanvim": {
       "rev": "d2f5271924117588c82bec9086c9807960aafe1e",
       "src": "https://github.com/mrcjkb/rustaceanvim"
+    },
+    "telescope.nvim": {
+      "rev": "9377230aa5305d9e9aca4ed8dadf1070fb4aa9fc",
+      "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
