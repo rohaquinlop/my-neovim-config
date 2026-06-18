@@ -12,7 +12,7 @@ vim.pack.add({
 	},
 	"https://github.com/folke/which-key.nvim",
 	"https://github.com/dmtrKovalenko/fff.nvim",
-	"https://github.com/ggandor/leap.nvim",
+	"https://codeberg.org/andyg/leap.nvim",
 	"https://github.com/tpope/vim-repeat",
 })
 
@@ -231,4 +231,3 @@ wk.add({
 	{ "md", desc = "Delete surrounding" },
 	{ "mr", desc = "Replace surrounding" },
 })
-
