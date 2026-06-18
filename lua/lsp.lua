@@ -179,11 +179,72 @@ vim.lsp.config("ruff", {
 	},
 })
 vim.lsp.config("ty", {})
+
+local function detect_venv(buf)
+	local root = vim.fs.root(buf, { ".venv", "venv", "pyproject.toml", ".git" })
+	if not root then
+		return
+	end
+	for _, venv_name in ipairs({ ".venv", "venv" }) do
+		local venv_path = root .. "/" .. venv_name
+		if vim.fn.isdirectory(venv_path) == 1 then
+			vim.env.VIRTUAL_ENV = venv_path
+			return
+		end
+	end
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = "UserConfig",
+	pattern = "python",
+	callback = function(ev)
+		detect_venv(ev.buf)
+	end,
+})
+
+vim.api.nvim_create_autocmd("DirChanged", {
+	group = "UserConfig",
+	callback = function(ev)
+		if vim.bo.filetype == "python" then
+			detect_venv(ev.buf)
+		end
+	end,
+})
 vim.lsp.config("bashls", {})
 vim.lsp.config("ts_ls", {})
 vim.lsp.config("clangd", {})
 vim.lsp.config("nixd", {})
 vim.lsp.config("nil", {})
+vim.lsp.config("pyright", {
+	before_init = function(params, config)
+		local root = params.rootPath
+		if not root or root == "" then
+			return
+		end
+		for _, venv_name in ipairs({ ".venv", "venv" }) do
+			local venv_path = root .. "/" .. venv_name
+			if vim.fn.isdirectory(venv_path) == 1 then
+				local python_bin = venv_path .. "/bin/python"
+				if vim.fn.executable(python_bin) == 1 then
+					config.settings = config.settings or {}
+					config.settings.python = config.settings.python or {}
+					config.settings.python.pythonPath = python_bin
+					return
+				end
+			end
+		end
+	end,
+	settings = {
+		python = {
+			analysis = {
+				typeCheckingMode = "off",
+				diagnosticMode = "off",
+				autoSearchPaths = true,
+				useLibraryCodeForTypes = true,
+			},
+		},
+	},
+})
 
 vim.g.rustaceanvim = {
 	server = {
@@ -260,6 +321,7 @@ vim.lsp.enable({
 	"lua_ls",
 	"bashls",
 	"ty",
+	"pyright",
 	"ts_ls",
 	"clangd",
 	"nixd",
