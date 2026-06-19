@@ -218,6 +218,7 @@ wk.add({
 	{ "<leader>g", group = "Go To" },
 	{ "<leader>b", group = "Buffer" },
 	{ "<leader>s", group = "Split" },
+	{ "<leader>a", group = "C Actions" },
 	{ "<leader>h", group = "Git Hunk" },
 	{ "gw", desc = "Leap (Helix jump)" },
 	{ "]f", desc = "Next function" },

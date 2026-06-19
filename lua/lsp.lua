@@ -265,6 +265,7 @@ do
 	local shfmt = require("efmls-configs.formatters.shfmt")
 
 	local cpplint = require("efmls-configs.linters.cpplint")
+	local cppcheck = require("efmls-configs.linters.cppcheck")
 	local clangfmt = require("efmls-configs.formatters.clang_format")
 	local cpp_clangfmt = {
 		formatCommand = "clang-format --style=Google -",
@@ -295,7 +296,7 @@ do
 		init_options = { documentFormatting = true },
 		settings = {
 			languages = {
-				c = { clangfmt, cpplint },
+				c = { clangfmt, cppcheck },
 				cpp = { cpp_clangfmt, cpplint },
 				css = { prettier_d },
 				html = { prettier_d },
