@@ -175,6 +175,9 @@ vim.lsp.config("ruff", {
 	init_options = {
 		settings = {
 			lineLength = 80,
+			lint = {
+				extendSelect = { "I" },
+			},
 		},
 	},
 })
@@ -194,9 +197,9 @@ local function detect_venv(buf)
 	end
 end
 
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
 	group = "UserConfig",
-	pattern = "python",
+	pattern = "*.py",
 	callback = function(ev)
 		detect_venv(ev.buf)
 	end,

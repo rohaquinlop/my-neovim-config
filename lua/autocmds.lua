@@ -46,13 +46,16 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 			return
 		end
 
-		pcall(vim.lsp.buf.format, {
+		local ok, err = pcall(vim.lsp.buf.format, {
 			bufnr = args.buf,
 			timeout_ms = 2000,
 			filter = function(c)
 				return c.name == "efm"
 			end,
 		})
+		if not ok then
+			vim.notify("Format error: " .. tostring(err), vim.log.levels.WARN)
+		end
 	end,
 })
 
