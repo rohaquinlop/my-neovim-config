@@ -35,14 +35,33 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 			return
 		end
 
-		local has_efm = false
-		for _, c in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
+		local clients = vim.lsp.get_clients({ bufnr = args.buf })
+
+		-- Find the best formatter:
+		--   efm (clang-format, stylua, ruff, prettier, etc.) is preferred
+		--   clangd as fallback for C/C++ when efm formatter isn't available
+		local formatter_name = nil
+		for _, c in ipairs(clients) do
 			if c.name == "efm" then
-				has_efm = true
+				formatter_name = "efm"
 				break
 			end
 		end
-		if not has_efm then
+
+		-- Fallback: clangd for C/C++ (handles formatting based on .clang-format)
+		if not formatter_name then
+			local ft = vim.bo[args.buf].filetype
+			if ft == "c" or ft == "cpp" then
+				for _, c in ipairs(clients) do
+					if c.name == "clangd" then
+						formatter_name = "clangd"
+						break
+					end
+				end
+			end
+		end
+
+		if not formatter_name then
 			return
 		end
 
@@ -50,7 +69,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 			bufnr = args.buf,
 			timeout_ms = 2000,
 			filter = function(c)
-				return c.name == "efm"
+				return c.name == formatter_name
 			end,
 		})
 		if not ok then
