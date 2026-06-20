@@ -2,18 +2,13 @@
 
 local augroup = vim.api.nvim_create_augroup("CConfig", { clear = true })
 
--- C-specific indentation (4 spaces, matching common styles like Linux/BSD)
+-- C-specific indentation (uses global tab settings: 2 spaces, expandtab)
 vim.api.nvim_create_autocmd("FileType", {
 	group = augroup,
 	pattern = { "c", "h" },
 	callback = function()
-		vim.bo.tabstop = 4
-		vim.bo.shiftwidth = 4
-		vim.bo.softtabstop = 4
-		vim.bo.expandtab = false -- use real tabs by default (Linux kernel style)
 		vim.bo.cindent = true
 		vim.bo.cinoptions = "l1,(0,t0,g0"
-		-- Highlight trailing whitespace and tabs-vs-spaces issues
 		vim.wo.colorcolumn = "80"
 	end,
 })
