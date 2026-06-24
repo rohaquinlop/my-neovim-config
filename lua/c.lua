@@ -61,8 +61,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	group = augroup,
 	pattern = { "c", "h" },
 	callback = function()
-		local opts = { noremap = true, silent = true, buffer = true }
-
 		-- Toggle between .c and .h (header/source switch)
 		vim.keymap.set("n", "<leader>ah", function()
 			local current = vim.fn.expand("%")
@@ -91,10 +89,7 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.keymap.set("n", "<leader>ac", function()
 			local file = vim.fn.expand("%")
 			local out = vim.fn.expand("%:r")
-			vim.cmd("!gcc -Wall -Wextra -std=c11 -o "
-				.. vim.fn.shellescape(out)
-				.. " "
-				.. vim.fn.shellescape(file))
+			vim.cmd("!gcc -Wall -Wextra -std=c11 -o " .. vim.fn.shellescape(out) .. " " .. vim.fn.shellescape(file))
 		end, { desc = "Compile current file", buffer = true })
 
 		-- Run compiled binary
@@ -105,7 +100,7 @@ vim.api.nvim_create_autocmd("FileType", {
 			else
 				vim.notify("No binary found: " .. out, vim.log.levels.WARN)
 			end
-		end, { desc = "Run compiled binary", buffer = true })
+		end, { desc = "Run compiled binary", buffer = true, noremap = true, silent = true })
 	end,
 })
 
